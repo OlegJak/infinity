@@ -20,20 +20,3 @@ $(document).scroll(function () {
 
 
 
-/*
-
-let img = $('<img src="img/img1.jpg" alt="" class="section__img">');
-
-let div = $('<div class="img__container"></div>');
-
-let element = div.append(img);
-
-$(document).scroll(function () { 
-    var screenTop = $(document).scrollTop();
-
-    if (screenTop >= position.top){
-        $(".section__container").append(element);
-    }
-});
-
-*/
