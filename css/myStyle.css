@@ -1,0 +1,16 @@
+body{
+    background-color: rgb(20, 20, 20);
+}
+
+section{
+    padding: 40px 10%;
+}
+
+.img__container{
+    width: 100%;
+    margin-top: 40px;
+}
+
+.section__img{
+    width: 100%;
+}
