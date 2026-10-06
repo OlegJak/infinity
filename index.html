@@ -1,45 +1,241 @@
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" href="css/reset.css">
-        <link rel="stylesheet" href="css/myStyle.css">
-        <title>Document</title>
-    </head>
-    <body>
-        <section class="section__1">
-            <div class="section__container">
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Бесконечные сердца</title>
+<style>
+  :root {
+    --bg: #fff5f7;
+    --text: #5a1a2b;
+    --accent: #e8335a;
+    --card: rgba(255, 255, 255, 0.75);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1c0e14;
+      --text: #ffd6e0;
+      --accent: #ff5c80;
+      --card: rgba(40, 18, 28, 0.8);
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+    overflow-x: hidden;
+  }
 
-                <div class="img__container">
-                    <img src="img/img1.jpg" alt="" class="section__img">
-                </div>
+  header {
+    min-height: 70vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 48px 16px 24px;
+  }
+  header h1 {
+    margin: 0;
+    max-width: 900px;
+    font-size: clamp(28px, 6vw, 64px);
+    line-height: 1.15;
+    font-weight: 800;
+  }
+  header h1 span { color: var(--accent); }
+  .big-heart {
+    width: clamp(80px, 16vw, 150px);
+    height: clamp(80px, 16vw, 150px);
+    margin-bottom: 16px;
+    color: var(--accent);
+    filter: drop-shadow(0 8px 24px rgba(232, 51, 90, 0.45));
+    animation: beat 1.2s ease-in-out infinite;
+  }
+  .hint {
+    margin-top: 32px;
+    opacity: 0.7;
+    font-size: 18px;
+    animation: bob 1.6s ease-in-out infinite;
+  }
 
-                <div class="img__container">
-                    <img src="img/img2.jpg" alt="" class="section__img">
-                </div>
+  #hearts {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(48px, 1fr));
+    gap: 6px;
+    padding: 0 16px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .h {
+    width: 100%;
+    height: 44px;
+    animation: pop 0.45s cubic-bezier(.2, 1.6, .4, 1) both;
+    cursor: pointer;
+    transition: transform 0.2s;
+  }
+  .h:hover { transform: scale(1.35) rotate(-8deg); }
 
-                <div class="img__container">
-                    <img src="img/img3.jpg" alt="" class="section__img">
-                </div>
+  .note {
+    grid-column: 1 / -1;
+    text-align: center;
+    font-size: clamp(18px, 3.5vw, 26px);
+    font-weight: 700;
+    color: var(--accent);
+    padding: 28px 8px;
+    animation: pop 0.6s ease both;
+  }
 
-                <div class="img__container">
-                    <img src="img/img4.jpg" alt="" class="section__img">
-                </div>
+  #sentinel { height: 1px; }
 
-                <div class="img__container">
-                    <img src="img/img5.jpg" alt="" class="section__img">
-                </div>
+  #counter {
+    position: fixed;
+    right: 16px;
+    bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--card);
+    backdrop-filter: blur(8px);
+    border-radius: 999px;
+    padding: 10px 18px;
+    font-weight: 700;
+    font-size: 16px;
+    box-shadow: 0 4px 20px rgba(232, 51, 90, 0.25);
+    z-index: 10;
+  }
+  #counter svg { width: 18px; height: 18px; color: var(--accent); }
+  #counter b { color: var(--accent); font-variant-numeric: tabular-nums; }
 
-                <div class="img__container">
-                    <img src="img/img6.jpg" alt="" class="section__img">
-                </div>
+  @keyframes pop {
+    from { transform: scale(0); opacity: 0; }
+    to   { transform: scale(1); opacity: 1; }
+  }
+  @keyframes beat {
+    0%, 100% { transform: scale(1); }
+    15% { transform: scale(1.18); }
+    30% { transform: scale(1); }
+    45% { transform: scale(1.12); }
+  }
+  @keyframes bob {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(8px); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .h, .note, .big-heart, .hint { animation: none; }
+  }
+</style>
+</head>
+<body>
+  <!-- Иконка сердца: один раз описана, дальше переиспользуется через <use> -->
+  <svg width="0" height="0" style="position:absolute">
+    <defs>
+      <linearGradient id="shine" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#fff" stop-opacity="0.35"/>
+        <stop offset="0.5" stop-color="#fff" stop-opacity="0"/>
+      </linearGradient>
+      <symbol id="heart" viewBox="0 0 24 24">
+        <path fill="currentColor" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+        <path fill="url(#shine)" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+        <ellipse cx="7.2" cy="7.6" rx="1.8" ry="1.1" fill="#fff" opacity="0.55" transform="rotate(-35 7.2 7.6)"/>
+      </symbol>
+    </defs>
+  </svg>
 
+  <header>
+    <svg class="big-heart"><use href="#heart"/></svg>
+    <h1>Сколько здесь сердец, <span>настолько сильно</span> я дорожу тобой</h1>
+    <div class="hint">листай вниз, посчитай ↓</div>
+  </header>
 
-            </div>
-        </section>
-        <script src="js/jquery-3.6.0.min.js"></script>
-        <script src="js/myScript.js"></script>
-    </body>
+  <main id="hearts"></main>
+  <div id="sentinel"></div>
+
+  <div id="counter"><svg><use href="#heart"/></svg>Сердец: <b id="count">0</b></div>
+
+<script>
+  const COLORS = ["#e8335a", "#ff4d6d", "#ff758f", "#ff8fab", "#c9184a", "#ff2e63", "#f72585", "#b5179e", "#ff6b81", "#d6336c"];
+  const NOTES = [
+    "Ещё не устал(а) листать? Я не устану дорожить",
+    "Ты правда думал(а), что они закончатся?",
+    "Спойлер: дна нет",
+    "Здесь могла быть граница моих чувств. Но её нет.",
+    "Палец не болит? А сердце моё не остывает",
+    "Ладно, сдаюсь, считать бесполезно",
+    "Даже мой браузер в шоке от количества любви",
+    "Продолжай, ты на правильном пути",
+    "Кстати, ты лучше всех. Листай дальше.",
+    "Сервер упадёт раньше, чем закончатся сердца",
+    "Это уже больше, чем звёзд на небе? Почти.",
+    "Бесконечность — это не предел",
+  ];
+  const BATCH = 120;
+  const NOTE_EVERY = 600;
+  const SVG_NS = "http://www.w3.org/2000/svg";
+
+  const grid = document.getElementById("hearts");
+  const countEl = document.getElementById("count");
+  let count = 0;
+  let noteIdx = 0;
+
+  const randomColor = () => COLORS[Math.floor(Math.random() * COLORS.length)];
+
+  function makeHeart(delay) {
+    const svg = document.createElementNS(SVG_NS, "svg");
+    svg.setAttribute("class", "h");
+    svg.style.color = randomColor();
+    svg.style.animationDelay = delay + "ms";
+    const use = document.createElementNS(SVG_NS, "use");
+    use.setAttribute("href", "#heart");
+    svg.appendChild(use);
+    return svg;
+  }
+
+  function addBatch() {
+    const frag = document.createDocumentFragment();
+    for (let i = 0; i < BATCH; i++) {
+      frag.appendChild(makeHeart((i % 24) * 15));
+      count++;
+      if (count % NOTE_EVERY === 0) {
+        const note = document.createElement("div");
+        note.className = "note";
+        note.textContent = NOTES[noteIdx++ % NOTES.length];
+        frag.appendChild(note);
+      }
+    }
+    grid.appendChild(frag);
+    countEl.textContent = count.toLocaleString("ru-RU");
+  }
+
+  // Подгружаем новые сердца, пока низ страницы близко
+  const sentinel = document.getElementById("sentinel");
+  let ticking = false;
+  function fill() {
+    ticking = false;
+    let guard = 0;
+    while (sentinel.getBoundingClientRect().top < innerHeight + 1000 && guard++ < 10) {
+      addBatch();
+    }
+  }
+  function onScroll() {
+    if (!ticking) { ticking = true; requestAnimationFrame(fill); }
+  }
+  addEventListener("scroll", onScroll, { passive: true });
+  addEventListener("resize", onScroll);
+
+  // Клик по сердцу — оно подпрыгивает и меняет цвет
+  grid.addEventListener("click", (e) => {
+    const heart = e.target.closest(".h");
+    if (!heart) return;
+    heart.style.color = randomColor();
+    heart.animate(
+      [{ transform: "scale(1)" }, { transform: "scale(1.8) rotate(15deg)" }, { transform: "scale(1)" }],
+      { duration: 400, easing: "ease-out" }
+    );
+  });
+
+  fill();
+</script>
+</body>
 </html>
